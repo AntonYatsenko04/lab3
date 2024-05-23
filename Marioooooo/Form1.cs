@@ -15,8 +15,8 @@ namespace Marioooooo
         private Rectangle topPaddle;
         private Rectangle bottomPaddle;
         private Rectangle ball;
-        private int ballSpeedX = 5;
-        private int ballSpeedY = 5;
+        private int ballSpeedX = 2;
+        private int ballSpeedY = 2;
         private readonly int paddleSpeed = 5;
         private readonly int ballAcceleration = 1;
 
@@ -266,12 +266,12 @@ namespace Marioooooo
         {
             base.OnPaint(e);
 
-            e.Graphics.FillRectangle(Brushes.Blue, topPaddle);
-            e.Graphics.FillRectangle(Brushes.Red, bottomPaddle);
-            e.Graphics.FillRectangle(Brushes.White, ball);
+            e.Graphics.FillRectangle(Brushes.Black, topPaddle);
+            e.Graphics.FillRectangle(Brushes.White, bottomPaddle);
+            e.Graphics.FillRectangle(Brushes.WhiteSmoke, ball);
 
-            e.Graphics.DrawString($"Top Score: {topScore}", this.Font, Brushes.White, 10, 30);
-            e.Graphics.DrawString($"Bottom Score: {bottomScore}", this.Font, Brushes.White, 10, this.ClientSize.Height - 40);
+            e.Graphics.DrawString($"Счет верхнего: {topScore}", this.Font, Brushes.White, 10, 30);
+            e.Graphics.DrawString($"Счет нижнего: {bottomScore}", this.Font, Brushes.White, 10, this.ClientSize.Height - 40);
 
             if (topBulletFired)
                 e.Graphics.FillRectangle(Brushes.Yellow, topBullet);

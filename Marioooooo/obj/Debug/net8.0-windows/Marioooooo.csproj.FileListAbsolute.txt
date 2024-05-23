@@ -46,3 +46,4 @@ D:\stud\l3k\lab3\Marioooooo\obj\Debug\net8.0-windows\refint\Marioooooo.dll
 D:\stud\l3k\lab3\Marioooooo\obj\Debug\net8.0-windows\Marioooooo.pdb
 D:\stud\l3k\lab3\Marioooooo\obj\Debug\net8.0-windows\Marioooooo.genruntimeconfig.cache
 D:\stud\l3k\lab3\Marioooooo\obj\Debug\net8.0-windows\ref\Marioooooo.dll
+D:\stud\l3k\lab3\Marioooooo\obj\Debug\net8.0-windows\Marioooooo.sourcelink.json
