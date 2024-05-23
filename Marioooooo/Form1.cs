@@ -8,12 +8,6 @@ namespace Marioooooo
 {
     public partial class Form1 : Form
     {
-        private CancellationTokenSource cancellationTokenSource;
-
-        //private Thread ballThread;
-        //private Thread topPaddleThread;
-        //private Thread bottomPaddleThread;
-        private bool running = true;
         private int topScore = 0;
         private int bottomScore = 0;
         private Dictionary<Keys, bool> keysPressed = new Dictionary<Keys, bool>();
@@ -23,8 +17,8 @@ namespace Marioooooo
         private Rectangle ball;
         private int ballSpeedX = 5;
         private int ballSpeedY = 5;
-        private int paddleSpeed = 5;
-        private int ballAcceleration = 1;
+        private readonly int paddleSpeed = 5;
+        private readonly int ballAcceleration = 1;
 
         // Add bullet properties
         private Rectangle topBullet;
@@ -48,7 +42,6 @@ namespace Marioooooo
         {
             InitializeComponent();
 
-            cancellationTokenSource = new CancellationTokenSource();
 
             this.BackColor = Color.Green;
             this.Size = new Size(300, 600); 
@@ -62,24 +55,23 @@ namespace Marioooooo
             keysPressed[Keys.Left] = false;
             keysPressed[Keys.Right] = false;
 
-            ThreadPool.QueueUserWorkItem(state => GameLoop(cancellationTokenSource.Token));
+            ThreadPool.QueueUserWorkItem(state => GameLoop());
 
-            ThreadPool.QueueUserWorkItem(state => PaddleMovement( Keys.Left, Keys.Right, cancellationTokenSource.Token));
-            ThreadPool.QueueUserWorkItem(state => PaddleMovement(Keys.A, Keys.D, cancellationTokenSource.Token));
+            ThreadPool.QueueUserWorkItem(state => PaddleMovement( Keys.Left, Keys.Right));
+            ThreadPool.QueueUserWorkItem(state => PaddleMovement(Keys.A, Keys.D ));
             
 
             topBullet = new Rectangle(0, 0, 5, 10);
             bottomBullet = new Rectangle(0, 0, 5, 10);
             topBulletReloadTime = DateTime.Now;
             bottomBulletReloadTime = DateTime.Now;
-
-
+            
             this.DoubleBuffered = true;
         }
         
-        private void PaddleMovement(Keys leftKey, Keys rightKey, CancellationToken token)
+        private void PaddleMovement(Keys leftKey, Keys rightKey)
         {
-            while (!token.IsCancellationRequested)
+            while (true)
             {
                 bool leftPressed = false;
                 bool rightPressed = false;
@@ -160,9 +152,9 @@ namespace Marioooooo
             }
         }
 
-        private void GameLoop(CancellationToken token)
+        private void GameLoop()
         {
-            while (!token.IsCancellationRequested)
+            while (true)
             {
                 Console.WriteLine("loop");
                 MoveBall();
@@ -318,15 +310,6 @@ namespace Marioooooo
             if (keysPressed.ContainsKey(e.KeyCode))
                 keysPressed[e.KeyCode] = false;
         }
-
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            running = false;
-            cancellationTokenSource.Cancel();
-
-            //ballThread.Join();
-            //topPaddleThread.Join();
-            //bottomPaddleThread.Join();
-        }
+        
     }
 }
