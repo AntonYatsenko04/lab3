@@ -1,4 +1,4 @@
-namespace Marioooooo
+namespace Lab3Football
 {
     internal static class Program
     {

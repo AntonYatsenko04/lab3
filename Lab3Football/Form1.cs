@@ -11,7 +11,7 @@ namespace Marioooooo
         private int topScore = 0;
         private int bottomScore = 0;
         private Dictionary<Keys, bool> keysPressed = new Dictionary<Keys, bool>();
-
+        
         private Rectangle topPaddle;
         private Rectangle bottomPaddle;
         private Rectangle ball;
