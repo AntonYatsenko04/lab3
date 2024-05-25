@@ -1,4 +1,6 @@
-namespace Lab3Football
+using Lab3Football;
+
+namespace Lab3Tanks
 {
     internal static class Program
     {
