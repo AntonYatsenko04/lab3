@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace Marioooooo
+namespace Lab3Football
 {
     public partial class Form1 : Form
     {
@@ -45,6 +45,8 @@ namespace Marioooooo
 
             this.BackColor = Color.Green;
             this.Size = new Size(300, 600); 
+            this.MinimumSize = new Size(300, 600); 
+            this.MaximumSize = new Size(300, 600); 
 
             topPaddle = new Rectangle(100, 10, 60, 10);
             bottomPaddle = new Rectangle(100, this.ClientSize.Height - 20, 60, 10);
@@ -59,7 +61,6 @@ namespace Marioooooo
 
             ThreadPool.QueueUserWorkItem(state => PaddleMovement( Keys.Left, Keys.Right));
             ThreadPool.QueueUserWorkItem(state => PaddleMovement(Keys.A, Keys.D ));
-            
 
             topBullet = new Rectangle(0, 0, 5, 10);
             bottomBullet = new Rectangle(0, 0, 5, 10);
