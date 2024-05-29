@@ -10,5 +10,5 @@ public class Constants
     public static int CloseInterval = 2;
     public static Size ClientSize = new Size(798, 597);
 
-    public static int SleepTimeout = 1000;
+    public static int SleepTimeout = 50;
 }

@@ -22,7 +22,7 @@ public partial class MainForm
 
     protected void PaintWall(PaintEventArgs e,Wall wall)
     {
-        var wallFigure = new Rectangle(wall.RightX, wall.UpperY, wall.Width, wall.Height);
+        var wallFigure = new Rectangle(wall.LeftX, wall.UpperY, wall.Width, wall.Height);
         e.Graphics.FillRectangle(Brushes.Chocolate,wallFigure);
     }
 }

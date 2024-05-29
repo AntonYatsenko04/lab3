@@ -15,5 +15,5 @@ public class Wall:ICollidable
     public int Width { get; }
     public int Height { get; }
     public int RightX => LeftX + Width;
-    public int LowerY => UpperY - Height;
+    public int LowerY => UpperY + Height;
 }

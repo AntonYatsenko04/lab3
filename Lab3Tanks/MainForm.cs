@@ -85,12 +85,6 @@ namespace Lab3Tanks
                         foreach (Wall wall in _walls)
                         {
                             GetCollidableConstraints(_upperTank, wall, out var upperTankConstraints, out _);
-                            Console.WriteLine("new wall con");
-                            upperTankConstraints.ForEach((e)=>Console.WriteLine(e));
-                            Console.WriteLine("itog");
-                            _upperTankConstraints.ForEach((e)=>Console.WriteLine(e));
-                            
-                            
                             GetCollidableConstraints(_lowerTank, wall, out var lowerTankConstraints, out _);
 
                             _upperTankConstraints.AddRange(upperTankConstraints);
@@ -106,10 +100,23 @@ namespace Lab3Tanks
 
         private List<Direction> _getConstraints(FieldObject fieldObject)
         {
+            var allUpperConstraints= new List<Direction>();
+            var allLowerConstraints = new List<Direction>();
+            foreach (Wall wall in _walls)
+            {
+                GetCollidableConstraints(_upperTank, wall, out var upperTankConstraints, out _);
+                GetCollidableConstraints(_lowerTank, wall, out var lowerTankConstraints, out _);
+
+                allUpperConstraints.AddRange(upperTankConstraints);
+                allLowerConstraints.AddRange(lowerTankConstraints);
+            }
       
             GetCollidableConstraints(_upperTank, _lowerTank, out var upperConstraints,
                 out var lowerConstraints
             );
+            
+            upperConstraints.AddRange(allUpperConstraints);
+            lowerConstraints.AddRange(allLowerConstraints);
             switch (fieldObject)
             {
                 case FieldObject.UpperTank:
@@ -142,8 +149,6 @@ namespace Lab3Tanks
                         {
                             if (fieldObject == FieldObject.UpperTank)
                             {
-                                _upperTankConstraints.ForEach((e)=>Console.WriteLine(e));
-                                Console.WriteLine("sdas");
                                 _upperTankConstraints.AddRange(_getConstraints(fieldObject));
                                 tankNavigator.Drive(keyValuePair.Key, _upperTankConstraints);
                                 _upperTankConstraints.Clear();
