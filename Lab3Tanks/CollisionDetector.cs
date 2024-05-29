@@ -70,10 +70,10 @@ public partial class MainForm
     {
         var constraints = new List<Direction>();
         var clientSize = ClientRectangle.Size;
-        bool cantMoveRight = obj.RightX >= ClientRectangle.Right;
+        bool cantMoveRight = obj.RightX >= ClientRectangle.Right - 10;
         bool cantMoveUp = obj.UpperY <= 0;
         bool cantMoveLeft = obj.LeftX <= 0;
-        bool cantMoveDown = obj.LowerY >= ClientRectangle.Bottom;
+        bool cantMoveDown = obj.LowerY >= ClientRectangle.Bottom - 10;
 
         if (cantMoveRight)
         {
