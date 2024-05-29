@@ -12,11 +12,11 @@ public class Tank
 
     public int YPos { get; private set; }
 
-    public Tank(int xPos, int yPos)
+    public Tank(int xPos, int yPos, int speed)
     {
         XPos = xPos;
-        _yPos = yPos;
-        _speed = 10;
+        YPos = yPos;
+        _speed = speed;
         _direction = Direction.Up;
         _timeOfLastShot=DateTime.Now;
         _reloadTime = TimeSpan.FromSeconds(1);

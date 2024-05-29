@@ -1,6 +1,6 @@
 ﻿namespace Lab3Tanks;
 
-public class TankNavigator
+public class TankNavigator :ICollidable
 {
     private Keys _upKey;
     private Keys _rightKey;
@@ -9,8 +9,14 @@ public class TankNavigator
     private Keys _shootKey;
     private Tank _tank;
     
-    public int TankXPos => _tank.XPos;
-    public int TankYPos => _tank.YPos;
+    public int LeftX => _tank.XPos;
+    public int UpperY => _tank.YPos;
+
+    public int Width => Constants.TankWidth;
+    public int Height => Constants.TankHeight;
+
+    public int RightX => LeftX + Width;
+    public int LowerY => UpperY + Height;
 
     public TankNavigator(Keys upKey, Keys rightKey, Keys downKey, Keys leftKey, Keys shootKey, int x,int y)
     {
@@ -19,7 +25,7 @@ public class TankNavigator
         _downKey = downKey;
         _leftKey = leftKey;
         _shootKey = shootKey;
-        _tank = new Tank(x,y);
+        _tank = new Tank(x,y, Constants.TankSpeed);
     }
 
     public void Drive(Keys key, List<Direction> constraints)
