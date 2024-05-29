@@ -26,6 +26,11 @@ namespace Lab3Tanks
         private TankNavigator _upperTank;
         private TankNavigator _lowerTank;
 
+        private List<Direction> _upperTankConstraints = new();
+        private List<Direction> _lowerTankConstraints = new();
+
+        private List<Wall> _walls = new List<Wall>();
+
         public MainForm()
         {
             this.BackColor = Color.Green;
@@ -35,10 +40,10 @@ namespace Lab3Tanks
 
             _upperTank = new TankNavigator(upKey: _upperTankUp, rightKey: _upperTankRight, downKey: _upperTankDown,
                 leftKey: _upperTankLeft,
-                _upperTankShoot, 10, 10);
+                _upperTankShoot, 250, 10);
             _lowerTank = new TankNavigator(upKey: _lowerTankUp, rightKey: _lowerTankRight, downKey: _lowerTankDown,
                 leftKey: _lowerTankLeft,
-                _lowerTankShoot, 20, 20);
+                _lowerTankShoot, 100, 100);
 
             _pressedKeys.Add(_upperTankUp, false);
             _pressedKeys.Add(_upperTankRight, false);
@@ -51,18 +56,57 @@ namespace Lab3Tanks
             _pressedKeys.Add(_lowerTankDown, false);
             _pressedKeys.Add(_lowerTankLeft, false);
             _pressedKeys.Add(_lowerTankShoot, false);
+            
+            _walls.Add(new Wall(leftX:280,upperY:0,width:Constants.WallWidth,height:Constants.WallHeight));
+            _walls.Add(new Wall(leftX:280,upperY:50,width:Constants.WallWidth,height:Constants.WallHeight));
+            _walls.Add(new Wall(leftX:330,upperY:50,width:Constants.WallWidth,height:Constants.WallHeight));
+            _walls.Add(new Wall(leftX:380,upperY:50,width:Constants.WallWidth,height:Constants.WallHeight));
+            _walls.Add(new Wall(leftX:380,upperY:0,width:Constants.WallWidth,height:Constants.WallHeight));
+            _walls.Add(new Wall(leftX:280,upperY:500,width:Constants.WallWidth,height:Constants.WallHeight));
+            _walls.Add(new Wall(leftX:280,upperY:450,width:Constants.WallWidth,height:Constants.WallHeight));
+            _walls.Add(new Wall(leftX:330,upperY:450,width:Constants.WallWidth,height:Constants.WallHeight));
+            _walls.Add(new Wall(leftX:380,upperY:450,width:Constants.WallWidth,height:Constants.WallHeight));
+            _walls.Add(new Wall(leftX:380,upperY:500,width:Constants.WallWidth,height:Constants.WallHeight));
 
+            ThreadPool.QueueUserWorkItem(state => _commonLoop());
             ThreadPool.QueueUserWorkItem(state => _driveTank(_upperTank, FieldObject.UpperTank));
             ThreadPool.QueueUserWorkItem(state => _driveTank(_lowerTank, FieldObject.LowerTank));
         }
 
         private void _commonLoop()
         {
+            while (true)
+            {
+
+                lock (_upperTankConstraints)
+                {
+                    lock (_lowerTankConstraints)
+                    {
+                        foreach (Wall wall in _walls)
+                        {
+                            GetCollidableConstraints(_upperTank, wall, out var upperTankConstraints, out _);
+                            Console.WriteLine("new wall con");
+                            upperTankConstraints.ForEach((e)=>Console.WriteLine(e));
+                            Console.WriteLine("itog");
+                            _upperTankConstraints.ForEach((e)=>Console.WriteLine(e));
+                            
+                            
+                            GetCollidableConstraints(_lowerTank, wall, out var lowerTankConstraints, out _);
+
+                            _upperTankConstraints.AddRange(upperTankConstraints);
+                            _lowerTankConstraints.AddRange(lowerTankConstraints);
+                        }
+                    }
+
+                    
+                }
+                Thread.Sleep(Constants.SleepTimeout);
+            }
         }
 
         private List<Direction> _getConstraints(FieldObject fieldObject)
         {
-            var constraints = new List<Direction>();
+      
             GetCollidableConstraints(_upperTank, _lowerTank, out var upperConstraints,
                 out var lowerConstraints
             );
@@ -73,7 +117,7 @@ namespace Lab3Tanks
                     return upperConstraints;
                 }
 
-                    break;
+                 
                 case FieldObject.LowerTank:
                 {
                     return lowerConstraints;
@@ -90,10 +134,31 @@ namespace Lab3Tanks
         {
             while (true)
             {
-                foreach (var keyValuePair in _pressedKeys.Where((e) => e.Value))
+                lock (_upperTankConstraints)
                 {
-                    tankNavigator.Drive(keyValuePair.Key, _getConstraints(fieldObject));
+                    lock (_lowerTankConstraints)
+                    {
+                        foreach (var keyValuePair in _pressedKeys.Where((e) => e.Value))
+                        {
+                            if (fieldObject == FieldObject.UpperTank)
+                            {
+                                _upperTankConstraints.ForEach((e)=>Console.WriteLine(e));
+                                Console.WriteLine("sdas");
+                                _upperTankConstraints.AddRange(_getConstraints(fieldObject));
+                                tankNavigator.Drive(keyValuePair.Key, _upperTankConstraints);
+                                _upperTankConstraints.Clear();
+                            }
+                            if (fieldObject == FieldObject.LowerTank)
+                            {
+                                _lowerTankConstraints.AddRange(_getConstraints(fieldObject));
+                                tankNavigator.Drive(keyValuePair.Key, _lowerTankConstraints);
+                                _lowerTankConstraints.Clear();
+                            }
+                        }
+                    }
+                    
                 }
+                
 
                 if (this.IsHandleCreated && !this.IsDisposed)
                 {
@@ -112,24 +177,10 @@ namespace Lab3Tanks
                     }
                 }
 
-                Thread.Sleep(50);
+                Thread.Sleep(Constants.SleepTimeout);
             }
         }
 
-
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            base.OnPaint(e);
-            Console.WriteLine(_upperTank.UpperY);
-            Console.WriteLine(_upperTank.RightX);
-            var upperTankFigure =
-                new Rectangle(_upperTank.LeftX, _upperTank.UpperY, _upperTank.Width, _upperTank.Height);
-            var bottomTankFigure =
-                new Rectangle(_lowerTank.LeftX, _lowerTank.UpperY, _lowerTank.Width, _lowerTank.Height);
-
-            e.Graphics.FillRectangle(Brushes.Black, upperTankFigure);
-            e.Graphics.FillRectangle(Brushes.White, bottomTankFigure);
-        }
 
         protected override void OnKeyDown(KeyEventArgs e)
         {
