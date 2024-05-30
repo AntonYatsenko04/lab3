@@ -19,9 +19,9 @@ public partial class MainForm
         bool firstAndSecondHaveCollideVertically = !firstHigherThanSecond && !secondHigherThanFirst;
 
         bool firstCloseToSecondFromLeft =
-            first.RightX >= second.LeftX - closeInterval && first.RightX <= second.LeftX + closeInterval;
+            first.RightX >= second.LeftX - closeInterval*2 && first.RightX <= second.RightX;
         bool firstCloseToSecondFromRight =
-            first.LeftX <= second.RightX + closeInterval && first.LeftX >= second.RightX - closeInterval;
+            first.LeftX <= second.RightX + closeInterval && first.LeftX >= second.LeftX;
 
         bool firstMoreLeftThanSecond = first.RightX <= second.LeftX;
         bool secondMoreLeftThanFirst = second.RightX <= first.LeftX;
@@ -208,11 +208,11 @@ public partial class MainForm
                     
                     GetCollidableConstraints(bullet, _lowerBase, out var bulletLowerConstraints, out var _);
                     GetCollidableConstraints(bullet, _upperBase, out var bulletUpperConstraints, out var _);
-                    if (bulletLowerConstraints.Count > 0)
+                    if (bulletLowerConstraints.Count > 0&&bullet.TankNavigator!=_lowerTank)
                     {
                         UpperWins();
                         return;
-                    }else if (bulletUpperConstraints.Count > 0)
+                    }else if (bulletUpperConstraints.Count > 0&&bullet.TankNavigator!=_upperTank)
                     {
                         LowerWins();
                         return;

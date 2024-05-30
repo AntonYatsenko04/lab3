@@ -4,23 +4,33 @@ public partial class MainForm
 {
     public void UpperWins()
     {
-        MessageBox.Show("Победа белых");
+        
+        StopThreads();
         ResetGame();
+        MessageBox.Show("Победа белых");
     }
 
     public void LowerWins()
     {
-        MessageBox.Show("Победа черных");
+       
+        StopThreads();
         ResetGame();
+        MessageBox.Show("Победа черных");
     }
 
     public void ResetGame()
     {
-        InitKeys();
+        lock (_lowerTankConstraints)
+        {
+            _lowerTankConstraints.Clear();
+        }
 
-       
-        _upperTankConstraints.Clear();
-        _lowerTankConstraints.Clear();
+        lock (_upperTankConstraints)
+        {
+            _upperTankConstraints.Clear();
+        }
+
+        InitKeys();
 
         SetNewTanks();
         _bullets.Clear();
@@ -70,20 +80,65 @@ public partial class MainForm
 
     public void InitThreads()
     {
-        ThreadPool.QueueUserWorkItem(state => _commonLoop());
-        ThreadPool.QueueUserWorkItem(state => _driveTank(_upperTank, FieldObject.UpperTank));
-        ThreadPool.QueueUserWorkItem(state => _driveTank(_lowerTank, FieldObject.LowerTank));
+        _upperTankThread = new Thread(() => _driveTank(_upperTank, FieldObject.UpperTank));
+        _lowerTankThread = new Thread(() => _driveTank(_lowerTank, FieldObject.LowerTank));
+        _commonThread = new Thread(() => _commonLoop());
+
+        _upperTankThread.IsBackground = true;
+        _lowerTankThread.IsBackground = true;
+           _commonThread.IsBackground = true;
+           
+           _upperTankThread.Start();
+            _lowerTankThread.Start();
+           _commonThread.Start();
+            
+        //         ThreadPool.QueueUserWorkItem(state => _commonLoop());
+        // ThreadPool.QueueUserWorkItem(state => _driveTank(_upperTank, FieldObject.UpperTank));
+        // ThreadPool.QueueUserWorkItem(state => _driveTank(_lowerTank, FieldObject.LowerTank));
     }
 
     public void SetNewTanks()
     {
-        _upperTank = new TankNavigator(upKey: _upperTankUp, rightKey: _upperTankRight, downKey: _upperTankDown,
-            leftKey: _upperTankLeft,
-            _upperTankShoot, 325, 100);
+        if (!_isFirstLaunch)
+        {
+            lock (_upperTank)
+            {
+                _upperTank = new TankNavigator(upKey: _upperTankUp, rightKey: _upperTankRight, downKey: _upperTankDown,
+                    leftKey: _upperTankLeft,
+                    _upperTankShoot, 325, 100);
+            }
 
+            lock (_lowerTank)
+            {
+                _lowerTank = new TankNavigator(upKey: _lowerTankUp, rightKey: _lowerTankRight, downKey: _lowerTankDown,
+                    leftKey: _lowerTankLeft,
+                    _lowerTankShoot, 375, 420);
+            }
+        }
+        else
+        {
+            _upperTank = new TankNavigator(upKey: _upperTankUp, rightKey: _upperTankRight, downKey: _upperTankDown,
+                leftKey: _upperTankLeft,
+                _upperTankShoot, 325, 100);
 
-        _lowerTank = new TankNavigator(upKey: _lowerTankUp, rightKey: _lowerTankRight, downKey: _lowerTankDown,
-            leftKey: _lowerTankLeft,
-            _lowerTankShoot, 375, 420);
+            _lowerTank = new TankNavigator(upKey: _lowerTankUp, rightKey: _lowerTankRight, downKey: _lowerTankDown,
+                leftKey: _lowerTankLeft,
+                _lowerTankShoot, 375, 420);
+        }
+    }
+
+    public void StopThreads()
+    {
+        try
+        {
+            _commonThread.Abort();
+            _lowerTankThread.Abort();
+            _upperTankThread.Abort();
+        }
+        catch (Exception e)
+        {
+            
+        }
+        
     }
 }

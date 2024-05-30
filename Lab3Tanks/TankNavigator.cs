@@ -54,10 +54,6 @@ public class TankNavigator :ICollidable
             Direction = Direction.Left;
             _tank.Move(Direction.Left);
         }
-        if (key == _shootKey)
-        {
-            _tank.TryShoot();
-        }
     }
     
     public bool Shoot()

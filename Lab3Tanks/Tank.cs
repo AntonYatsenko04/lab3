@@ -18,7 +18,7 @@ public class Tank
         YPos = yPos;
         _speed = speed;
         _direction = Direction.Up;
-        _timeOfLastShot=DateTime.Now;
+        _timeOfLastShot=DateTime.Today;
         _reloadTime = TimeSpan.FromMilliseconds(200);
     }
 

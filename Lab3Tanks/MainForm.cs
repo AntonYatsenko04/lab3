@@ -35,6 +35,12 @@ namespace Lab3Tanks
         private Wall _upperBase;
         private Wall _lowerBase;
 
+        private bool _isFirstLaunch = true;
+
+        private Thread _upperTankThread;
+        private Thread _lowerTankThread;
+        private Thread _commonThread;
+
         public MainForm()
         {
             this.BackColor = Color.Green;
@@ -83,9 +89,19 @@ namespace Lab3Tanks
                 GetCollidableConstraints(_upperTank, _lowerTank, out var upperConstraints,
                     out var lowerConstraints
                 );
+                
+                GetCollidableConstraints(_upperTank,_upperBase,out var upperTankUpperBaseConstraints,out var _);
+                GetCollidableConstraints(_upperTank,_lowerBase,out var upperTankLowerBaseConstraints,out var _);
+                GetCollidableConstraints(_lowerTank,_upperBase,out var lowerTankUpperBaseConstraints,out var _);
+                GetCollidableConstraints(_lowerTank,_lowerBase,out var lowerTankLowerBaseConstraints,out var _);
             
                 upperConstraints.AddRange(allUpperConstraints);
+                upperConstraints.AddRange(upperTankUpperBaseConstraints);
+                upperConstraints.AddRange(upperTankLowerBaseConstraints);
+                
                 lowerConstraints.AddRange(allLowerConstraints);
+                lowerConstraints.AddRange(lowerTankUpperBaseConstraints);
+                lowerConstraints.AddRange(lowerTankLowerBaseConstraints);
                 switch (fieldObject)
                 {
                     case FieldObject.UpperTank:

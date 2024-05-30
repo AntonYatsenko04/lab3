@@ -4,7 +4,7 @@ public class Constants
 {
     public static int TankHeight = 30;
     public static int TankWidth = 30;
-    public static int TankSpeed = 10;
+    public static int TankSpeed = 4;
     
     public static int WallHeight = 50;
     public static int WallWidth = 50;
