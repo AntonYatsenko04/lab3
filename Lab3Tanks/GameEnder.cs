@@ -16,15 +16,16 @@ public partial class MainForm
 
     public void ResetGame()
     {
-    InitKeys();
+        InitKeys();
 
-    _upperTankConstraints.Clear();
-    _lowerTankConstraints.Clear();
-    
-    SetNewTanks();
-    
-    SetNewWallsAndBase();
-    InitThreads();
+       
+        _upperTankConstraints.Clear();
+        _lowerTankConstraints.Clear();
+
+        SetNewTanks();
+        _bullets.Clear();
+        SetNewWallsAndBase();
+        InitThreads();
     }
 
     public void SetNewWallsAndBase()
@@ -32,19 +33,19 @@ public partial class MainForm
         lock (_walls)
         {
             _walls.Clear();
-            _walls.Add(new Wall(leftX:280,upperY:0,width:Constants.WallWidth,height:Constants.WallHeight));
-            _walls.Add(new Wall(leftX:280,upperY:50,width:Constants.WallWidth,height:Constants.WallHeight));
-            _walls.Add(new Wall(leftX:330,upperY:50,width:Constants.WallWidth,height:Constants.WallHeight));
-            _walls.Add(new Wall(leftX:380,upperY:50,width:Constants.WallWidth,height:Constants.WallHeight));
-            _walls.Add(new Wall(leftX:380,upperY:0,width:Constants.WallWidth,height:Constants.WallHeight));
+            _walls.Add(new Wall(leftX: 280, upperY: 0, width: Constants.WallWidth, height: Constants.WallHeight));
+            _walls.Add(new Wall(leftX: 280, upperY: 50, width: Constants.WallWidth, height: Constants.WallHeight));
+            _walls.Add(new Wall(leftX: 330, upperY: 50, width: Constants.WallWidth, height: Constants.WallHeight));
+            _walls.Add(new Wall(leftX: 380, upperY: 50, width: Constants.WallWidth, height: Constants.WallHeight));
+            _walls.Add(new Wall(leftX: 380, upperY: 0, width: Constants.WallWidth, height: Constants.WallHeight));
             _upperBase = new Wall(leftX: 330, upperY: 0, width: Constants.WallWidth, height: Constants.WallHeight);
-            
-            _walls.Add(new Wall(leftX:280,upperY:500,width:Constants.WallWidth,height:Constants.WallHeight));
-            _walls.Add(new Wall(leftX:280,upperY:450,width:Constants.WallWidth,height:Constants.WallHeight));
-            _walls.Add(new Wall(leftX:330,upperY:450,width:Constants.WallWidth,height:Constants.WallHeight));
-            _walls.Add(new Wall(leftX:380,upperY:450,width:Constants.WallWidth,height:Constants.WallHeight));
-            _walls.Add(new Wall(leftX:380,upperY:500,width:Constants.WallWidth,height:Constants.WallHeight));
-            _lowerBase = new Wall(leftX:330,upperY:500,width:Constants.WallWidth,height:Constants.WallHeight);
+
+            _walls.Add(new Wall(leftX: 280, upperY: 500, width: Constants.WallWidth, height: Constants.WallHeight));
+            _walls.Add(new Wall(leftX: 280, upperY: 450, width: Constants.WallWidth, height: Constants.WallHeight));
+            _walls.Add(new Wall(leftX: 330, upperY: 450, width: Constants.WallWidth, height: Constants.WallHeight));
+            _walls.Add(new Wall(leftX: 380, upperY: 450, width: Constants.WallWidth, height: Constants.WallHeight));
+            _walls.Add(new Wall(leftX: 380, upperY: 500, width: Constants.WallWidth, height: Constants.WallHeight));
+            _lowerBase = new Wall(leftX: 330, upperY: 500, width: Constants.WallWidth, height: Constants.WallHeight);
         }
     }
 
@@ -65,12 +66,10 @@ public partial class MainForm
             _pressedKeys.Add(_lowerTankLeft, false);
             _pressedKeys.Add(_lowerTankShoot, false);
         }
-        
     }
 
     public void InitThreads()
     {
-        
         ThreadPool.QueueUserWorkItem(state => _commonLoop());
         ThreadPool.QueueUserWorkItem(state => _driveTank(_upperTank, FieldObject.UpperTank));
         ThreadPool.QueueUserWorkItem(state => _driveTank(_lowerTank, FieldObject.LowerTank));
@@ -78,17 +77,13 @@ public partial class MainForm
 
     public void SetNewTanks()
     {
-       
-            _upperTank = new TankNavigator(upKey: _upperTankUp, rightKey: _upperTankRight, downKey: _upperTankDown,
-                leftKey: _upperTankLeft,
-                _upperTankShoot, 325, 100);
-        
+        _upperTank = new TankNavigator(upKey: _upperTankUp, rightKey: _upperTankRight, downKey: _upperTankDown,
+            leftKey: _upperTankLeft,
+            _upperTankShoot, 325, 100);
 
-       
-            _lowerTank = new TankNavigator(upKey: _lowerTankUp, rightKey: _lowerTankRight, downKey: _lowerTankDown,
-                leftKey: _lowerTankLeft,
-                _lowerTankShoot, 375, 420);
-        
-        
+
+        _lowerTank = new TankNavigator(upKey: _lowerTankUp, rightKey: _lowerTankRight, downKey: _lowerTankDown,
+            leftKey: _lowerTankLeft,
+            _lowerTankShoot, 375, 420);
     }
 }

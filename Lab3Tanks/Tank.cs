@@ -19,7 +19,7 @@ public class Tank
         _speed = speed;
         _direction = Direction.Up;
         _timeOfLastShot=DateTime.Now;
-        _reloadTime = TimeSpan.FromSeconds(1);
+        _reloadTime = TimeSpan.FromMilliseconds(200);
     }
 
     public void Move(Direction direction)
@@ -47,7 +47,6 @@ public class Tank
     {
         if (DateTime.Now - _timeOfLastShot >= _reloadTime)
         {
-            Console.WriteLine("shoot");
             _timeOfLastShot = DateTime.Now;
             return true;
         }

@@ -11,11 +11,11 @@ public class Constants
     
     public static int BulletWidth = 5;
     public static int BulletHeight = 5;
-    public static int BulletSpeed = 40;
+    public static int BulletSpeed = 20;
     
     
     public static int CloseInterval = 2;
     public static Size ClientSize = new Size(798, 597);
 
-    public static int SleepTimeout = 100;
+    public static int SleepTimeout = 50;
 }
