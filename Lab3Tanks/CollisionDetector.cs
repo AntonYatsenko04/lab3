@@ -7,12 +7,12 @@ using static System.Windows.Forms.Form;
 public partial class MainForm
 {
     public void GetCollidableConstraints(ICollidable first,
-        ICollidable second, out List<Direction> firstConstraints, out List<Direction> secondConstraints)
+        ICollidable second, out List<Direction> firstConstraints, out List<Direction> secondConstraints, int closeInterval = 2 )
     {
         firstConstraints = new List<Direction>();
         secondConstraints = new List<Direction>();
 
-        int closeInterval = Constants.CloseInterval;
+        
 
         bool firstHigherThanSecond = first.UpperY >= second.LowerY;
         bool secondHigherThanFirst = second.UpperY >= first.LowerY;
@@ -27,10 +27,10 @@ public partial class MainForm
         bool secondMoreLeftThanFirst = second.RightX <= first.LeftX;
         bool firstAndSecondCollideHorisontally = !firstMoreLeftThanSecond && !secondMoreLeftThanFirst;
 
-        bool firstCloseToSecondFromTop = first.UpperY <= second.LowerY + closeInterval &&
-                                         first.UpperY >= second.LowerY - closeInterval;
-        bool firstCloseToSecondFromBottom = first.LowerY >= second.UpperY - closeInterval &&
-                                            first.LowerY <= second.UpperY + closeInterval;
+        bool firstCloseToSecondFromBottom = first.UpperY <= second.LowerY + closeInterval &&
+                                         first.UpperY >= second.UpperY ;
+        bool firstCloseToSecondFromTop = first.LowerY >= second.UpperY - closeInterval &&
+                                            first.LowerY <= second.LowerY ;
 
 
         if (firstAndSecondHaveCollideVertically)
@@ -51,13 +51,13 @@ public partial class MainForm
 
         if (firstAndSecondCollideHorisontally)
         {
-            if (firstCloseToSecondFromBottom)
+            if (firstCloseToSecondFromTop)
             {
                 firstConstraints.Add(Direction.Down);
                 secondConstraints.Add(Direction.Up);
             }
 
-            if (firstCloseToSecondFromTop)
+            if (firstCloseToSecondFromBottom)
             {
                 firstConstraints.Add(Direction.Up);
                 secondConstraints.Add(Direction.Down);
@@ -71,7 +71,6 @@ public partial class MainForm
     private List<Direction> _getClientCollisionConstraints(ICollidable obj)
     {
         var constraints = new List<Direction>();
-        var clientSize = ClientRectangle.Size;
         bool cantMoveRight = obj.RightX >= ClientRectangle.Right;
         bool cantMoveUp = obj.UpperY <= 0;
         bool cantMoveLeft = obj.LeftX <= 0;
@@ -106,14 +105,18 @@ public partial class MainForm
         {
             lock (_lowerTankConstraints)
             {
-                foreach (Wall wall in _walls)
+                lock (_walls)
                 {
-                    GetCollidableConstraints(_upperTank, wall, out var upperTankConstraints, out _);
-                    GetCollidableConstraints(_lowerTank, wall, out var lowerTankConstraints, out _);
+                    foreach (Wall wall in _walls)
+                    {
+                        GetCollidableConstraints(_upperTank, wall, out var upperTankConstraints, out _);
+                        GetCollidableConstraints(_lowerTank, wall, out var lowerTankConstraints, out _);
 
-                    _upperTankConstraints.AddRange(upperTankConstraints);
-                    _lowerTankConstraints.AddRange(lowerTankConstraints);
+                        _upperTankConstraints.AddRange(upperTankConstraints);
+                        _lowerTankConstraints.AddRange(lowerTankConstraints);
+                    }
                 }
+                
             }
         }
     }
@@ -177,19 +180,44 @@ public partial class MainForm
 
                         if (bulletToUpperConstraints.Count > 0 && bullet.TankNavigator != _upperTank)
                         {
-                            MessageBox.Show("lower win");
                             _bullets.Remove(bullet);
+                            LowerWins();
                             return;
                         }
 
                         if (bulletToLowerConstraints.Count > 0 && bullet.TankNavigator != _lowerTank)
                         {
-                            MessageBox.Show("up win");
                             _bullets.Remove(bullet);
-                            return;
+                           UpperWins();
+                           return;
                         }
                     }
                 }
+            }
+        }
+    }
+
+    public void CheckBulletBaseCollision()
+    {
+        lock (_bullets)
+        {
+            for (var i = 0; i < _bullets.Count; i++)
+            {
+                var bullet = _bullets[i];
+                
+                    
+                    GetCollidableConstraints(bullet, _lowerBase, out var bulletLowerConstraints, out var _);
+                    GetCollidableConstraints(bullet, _upperBase, out var bulletUpperConstraints, out var _);
+                    if (bulletLowerConstraints.Count > 0)
+                    {
+                        UpperWins();
+                        return;
+                    }else if (bulletUpperConstraints.Count > 0)
+                    {
+                        LowerWins();
+                        return;
+                    }
+                
             }
         }
     }

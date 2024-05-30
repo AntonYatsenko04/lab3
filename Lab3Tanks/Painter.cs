@@ -23,12 +23,24 @@ public partial class MainForm
         {
             PaintBullet(e,bullet);
         }
+        
+        PaintBases(e);
     }
 
-    protected void PaintWall(PaintEventArgs e,Wall wall)
+    protected void PaintWall(PaintEventArgs e,Wall wall,  bool isWall = true)
     {
         var wallFigure = new Rectangle(wall.LeftX, wall.UpperY, wall.Width, wall.Height);
-        e.Graphics.FillRectangle(Brushes.Chocolate,wallFigure);
+        Brush color;
+        if (isWall)
+        {
+            color = Brushes.Chocolate;
+        }
+        else
+        {
+            color = Brushes.Blue;
+        }
+        
+        e.Graphics.FillRectangle(color,wallFigure);
     }
     protected void PaintBullet(PaintEventArgs e,Bullet bullet)
     {
@@ -46,5 +58,11 @@ public partial class MainForm
             }
         }
         
+    }
+
+    public void PaintBases(PaintEventArgs e)
+    {
+        PaintWall(e,_lowerBase,false);
+        PaintWall(e,_upperBase,false);
     }
 }

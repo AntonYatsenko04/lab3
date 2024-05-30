@@ -32,6 +32,9 @@ namespace Lab3Tanks
         private List<Bullet> _bullets = new List<Bullet>();
         private List<Wall> _walls = new List<Wall>();
 
+        private Wall _upperBase;
+        private Wall _lowerBase;
+
         public MainForm()
         {
             this.BackColor = Color.Green;
@@ -39,39 +42,12 @@ namespace Lab3Tanks
             MinimumSize = Constants.ClientSize;
             MaximumSize = Constants.ClientSize;
 
-            _upperTank = new TankNavigator(upKey: _upperTankUp, rightKey: _upperTankRight, downKey: _upperTankDown,
-                leftKey: _upperTankLeft,
-                _upperTankShoot, 250, 10);
-            _lowerTank = new TankNavigator(upKey: _lowerTankUp, rightKey: _lowerTankRight, downKey: _lowerTankDown,
-                leftKey: _lowerTankLeft,
-                _lowerTankShoot, 100, 100);
-
-            _pressedKeys.Add(_upperTankUp, false);
-            _pressedKeys.Add(_upperTankRight, false);
-            _pressedKeys.Add(_upperTankDown, false);
-            _pressedKeys.Add(_upperTankLeft, false);
-            _pressedKeys.Add(_upperTankShoot, false);
-
-            _pressedKeys.Add(_lowerTankUp, false);
-            _pressedKeys.Add(_lowerTankRight, false);
-            _pressedKeys.Add(_lowerTankDown, false);
-            _pressedKeys.Add(_lowerTankLeft, false);
-            _pressedKeys.Add(_lowerTankShoot, false);
+           SetNewTanks();
+            InitKeys();
             
-            _walls.Add(new Wall(leftX:280,upperY:0,width:Constants.WallWidth,height:Constants.WallHeight));
-            _walls.Add(new Wall(leftX:280,upperY:50,width:Constants.WallWidth,height:Constants.WallHeight));
-            _walls.Add(new Wall(leftX:330,upperY:50,width:Constants.WallWidth,height:Constants.WallHeight));
-            _walls.Add(new Wall(leftX:380,upperY:50,width:Constants.WallWidth,height:Constants.WallHeight));
-            _walls.Add(new Wall(leftX:380,upperY:0,width:Constants.WallWidth,height:Constants.WallHeight));
-            _walls.Add(new Wall(leftX:280,upperY:500,width:Constants.WallWidth,height:Constants.WallHeight));
-            _walls.Add(new Wall(leftX:280,upperY:450,width:Constants.WallWidth,height:Constants.WallHeight));
-            _walls.Add(new Wall(leftX:330,upperY:450,width:Constants.WallWidth,height:Constants.WallHeight));
-            _walls.Add(new Wall(leftX:380,upperY:450,width:Constants.WallWidth,height:Constants.WallHeight));
-            _walls.Add(new Wall(leftX:380,upperY:500,width:Constants.WallWidth,height:Constants.WallHeight));
-
-            ThreadPool.QueueUserWorkItem(state => _commonLoop());
-            ThreadPool.QueueUserWorkItem(state => _driveTank(_upperTank, FieldObject.UpperTank));
-            ThreadPool.QueueUserWorkItem(state => _driveTank(_lowerTank, FieldObject.LowerTank));
+            SetNewWallsAndBase();
+            
+            InitThreads();
         }
 
         private void _commonLoop()
@@ -83,6 +59,7 @@ namespace Lab3Tanks
                 AnimateBullet();
                 CheckBulletClientCollision();
                 CheckBulletWallCollision();
+                CheckBulletBaseCollision();
                 CheckBulletTankCollision();
                 Thread.Sleep(Constants.SleepTimeout);
             }
@@ -92,38 +69,42 @@ namespace Lab3Tanks
         {
             var allUpperConstraints= new List<Direction>();
             var allLowerConstraints = new List<Direction>();
-            foreach (Wall wall in _walls)
+            lock (_walls)
             {
-                GetCollidableConstraints(_upperTank, wall, out var upperTankConstraints, out _);
-                GetCollidableConstraints(_lowerTank, wall, out var lowerTankConstraints, out _);
-
-                allUpperConstraints.AddRange(upperTankConstraints);
-                allLowerConstraints.AddRange(lowerTankConstraints);
-            }
-      
-            GetCollidableConstraints(_upperTank, _lowerTank, out var upperConstraints,
-                out var lowerConstraints
-            );
-            
-            upperConstraints.AddRange(allUpperConstraints);
-            lowerConstraints.AddRange(allLowerConstraints);
-            switch (fieldObject)
-            {
-                case FieldObject.UpperTank:
+                foreach (Wall wall in _walls)
                 {
-                    return upperConstraints;
+                    GetCollidableConstraints(_upperTank, wall, out var upperTankConstraints, out _);
+                    GetCollidableConstraints(_lowerTank, wall, out var lowerTankConstraints, out _);
+
+                    allUpperConstraints.AddRange(upperTankConstraints);
+                    allLowerConstraints.AddRange(lowerTankConstraints);
                 }
+      
+                GetCollidableConstraints(_upperTank, _lowerTank, out var upperConstraints,
+                    out var lowerConstraints
+                );
+            
+                upperConstraints.AddRange(allUpperConstraints);
+                lowerConstraints.AddRange(allLowerConstraints);
+                switch (fieldObject)
+                {
+                    case FieldObject.UpperTank:
+                    {
+                        return upperConstraints;
+                    }
 
                  
-                case FieldObject.LowerTank:
-                {
-                    return lowerConstraints;
+                    case FieldObject.LowerTank:
+                    {
+                        return lowerConstraints;
+                    }
+
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(fieldObject), fieldObject, null);
                 }
 
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(fieldObject), fieldObject, null);
             }
-
+            
         }
 
 
@@ -181,8 +162,14 @@ namespace Lab3Tanks
         {
             base.OnKeyDown(e);
 
+
             if (_pressedKeys.ContainsKey(e.KeyCode))
+            {
+                
                 _pressedKeys[e.KeyCode] = true;
+                Console.WriteLine(e.KeyData);
+            }
+                
         }
 
         protected override void OnKeyUp(KeyEventArgs e)

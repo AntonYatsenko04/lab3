@@ -39,17 +39,19 @@ public partial class MainForm
 
     public void ShootKey()
     {
-        foreach (var keyValuePair in _pressedKeys.Where((e) => e.Value))
+        lock (_pressedKeys)
         {
-            if (keyValuePair.Key == _upperTankShoot)
+            foreach (var keyValuePair in _pressedKeys.Where((e) => e.Value))
             {
-                Shoot(FieldObject.UpperTank);
-            }
-            if (keyValuePair.Key == _lowerTankShoot)
-            {
-                Shoot(FieldObject.LowerTank);
+                if (keyValuePair.Key == _upperTankShoot)
+                {
+                    Shoot(FieldObject.UpperTank);
+                }
+                if (keyValuePair.Key == _lowerTankShoot)
+                {
+                    Shoot(FieldObject.LowerTank);
+                }
             }
         }
-        
     }
 }
