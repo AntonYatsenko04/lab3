@@ -45,9 +45,10 @@ public class Tank
 
     public bool TryShoot()
     {
-        if (DateTime.Now - _timeOfLastShot <= _reloadTime)
+        if (DateTime.Now - _timeOfLastShot >= _reloadTime)
         {
             Console.WriteLine("shoot");
+            _timeOfLastShot = DateTime.Now;
             return true;
         }
 

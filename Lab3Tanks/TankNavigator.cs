@@ -18,6 +18,10 @@ public class TankNavigator :ICollidable
     public int RightX => LeftX + Width;
     public int LowerY => UpperY + Height;
 
+    
+    
+    public Direction Direction { get; set; }
+
     public TankNavigator(Keys upKey, Keys rightKey, Keys downKey, Keys leftKey, Keys shootKey, int x,int y)
     {
         _upKey = upKey;
@@ -32,23 +36,32 @@ public class TankNavigator :ICollidable
     {
         if (key == _upKey&&!constraints.Contains(Direction.Up))
         {
+            Direction = Direction.Up;
             _tank.Move(Direction.Up);
         }
         if (key == _rightKey&&!constraints.Contains(Direction.Right))
         {
+            Direction = Direction.Right;
             _tank.Move(Direction.Right);
         }
         if (key == _downKey&&!constraints.Contains(Direction.Down))
         {
+            Direction = Direction.Down;
             _tank.Move(Direction.Down);
         }
         if (key == _leftKey&&!constraints.Contains(Direction.Left))
         {
+            Direction = Direction.Left;
             _tank.Move(Direction.Left);
         }
         if (key == _shootKey)
         {
             _tank.TryShoot();
         }
+    }
+    
+    public bool Shoot()
+    {
+        return _tank.TryShoot();
     }
 }

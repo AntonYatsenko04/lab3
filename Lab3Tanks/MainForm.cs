@@ -19,7 +19,7 @@ namespace Lab3Tanks
         private Keys _lowerTankRight = Keys.Right;
         private Keys _lowerTankDown = Keys.Down;
         private Keys _lowerTankLeft = Keys.Left;
-        private Keys _lowerTankShoot = Keys.RShiftKey;
+        private Keys _lowerTankShoot = Keys.Enter;
 
         private Dictionary<Keys, bool> _pressedKeys = new();
 
@@ -29,6 +29,7 @@ namespace Lab3Tanks
         private List<Direction> _upperTankConstraints = new();
         private List<Direction> _lowerTankConstraints = new();
 
+        private List<Bullet> _bullets = new List<Bullet>();
         private List<Wall> _walls = new List<Wall>();
 
         public MainForm()
@@ -77,23 +78,12 @@ namespace Lab3Tanks
         {
             while (true)
             {
-
-                lock (_upperTankConstraints)
-                {
-                    lock (_lowerTankConstraints)
-                    {
-                        foreach (Wall wall in _walls)
-                        {
-                            GetCollidableConstraints(_upperTank, wall, out var upperTankConstraints, out _);
-                            GetCollidableConstraints(_lowerTank, wall, out var lowerTankConstraints, out _);
-
-                            _upperTankConstraints.AddRange(upperTankConstraints);
-                            _lowerTankConstraints.AddRange(lowerTankConstraints);
-                        }
-                    }
-
-                    
-                }
+                UpdateWallTankConstraints();
+                ShootKey();
+                AnimateBullet();
+                CheckBulletClientCollision();
+                CheckBulletWallCollision();
+                CheckBulletTankCollision();
                 Thread.Sleep(Constants.SleepTimeout);
             }
         }
