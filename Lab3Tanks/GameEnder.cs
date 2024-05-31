@@ -4,7 +4,7 @@ public partial class MainForm
 {
     public void UpperWins()
     {
-        
+        Console.WriteLine("Upper win");
         StopThreads();
         ResetGame();
         MessageBox.Show("Победа белых");
@@ -20,6 +20,7 @@ public partial class MainForm
 
     public void ResetGame()
     {
+        Console.WriteLine("Reset game");
         lock (_lowerTankConstraints)
         {
             _lowerTankConstraints.Clear();
@@ -29,13 +30,20 @@ public partial class MainForm
         {
             _upperTankConstraints.Clear();
         }
-
+        Console.WriteLine("cleared constraints");
         InitKeys();
-
+        Console.WriteLine("init keys");
         SetNewTanks();
-        _bullets.Clear();
+        Console.WriteLine("set tanks");
+        lock (_bullets)
+        {
+            _bullets.Clear();
+        }
+        Console.WriteLine("cleared bullets");
         SetNewWallsAndBase();
+        Console.WriteLine("walls");
         InitThreads();
+        Console.WriteLine("finish threds");
     }
 
     public void SetNewWallsAndBase()
@@ -91,10 +99,7 @@ public partial class MainForm
            _upperTankThread.Start();
             _lowerTankThread.Start();
            _commonThread.Start();
-            
-        //         ThreadPool.QueueUserWorkItem(state => _commonLoop());
-        // ThreadPool.QueueUserWorkItem(state => _driveTank(_upperTank, FieldObject.UpperTank));
-        // ThreadPool.QueueUserWorkItem(state => _driveTank(_lowerTank, FieldObject.LowerTank));
+           
     }
 
     public void SetNewTanks()
@@ -105,25 +110,25 @@ public partial class MainForm
             {
                 _upperTank = new TankNavigator(upKey: _upperTankUp, rightKey: _upperTankRight, downKey: _upperTankDown,
                     leftKey: _upperTankLeft,
-                    _upperTankShoot, 325, 100);
+                    _upperTankShoot, 325, 100,Direction.Down);
             }
 
             lock (_lowerTank)
             {
                 _lowerTank = new TankNavigator(upKey: _lowerTankUp, rightKey: _lowerTankRight, downKey: _lowerTankDown,
                     leftKey: _lowerTankLeft,
-                    _lowerTankShoot, 375, 420);
+                    _lowerTankShoot, 375, 420,Direction.Up);
             }
         }
         else
         {
             _upperTank = new TankNavigator(upKey: _upperTankUp, rightKey: _upperTankRight, downKey: _upperTankDown,
                 leftKey: _upperTankLeft,
-                _upperTankShoot, 325, 100);
+                _upperTankShoot, 525, 100,Direction.Down);
 
             _lowerTank = new TankNavigator(upKey: _lowerTankUp, rightKey: _lowerTankRight, downKey: _lowerTankDown,
                 leftKey: _lowerTankLeft,
-                _lowerTankShoot, 375, 420);
+                _lowerTankShoot, 175, 420,Direction.Up);
         }
     }
 
@@ -131,13 +136,14 @@ public partial class MainForm
     {
         try
         {
-            _commonThread.Abort();
-            _lowerTankThread.Abort();
-            _upperTankThread.Abort();
+            _stopThread = true;
+            Console.WriteLine("Stop thread ");
+            Thread.Sleep(Constants.SleepTimeout+10);
+            _stopThread = false;
         }
         catch (Exception e)
         {
-            
+            Console.WriteLine("Stop thread ex"+e);
         }
         
     }

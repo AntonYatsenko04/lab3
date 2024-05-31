@@ -12,12 +12,10 @@ public partial class MainForm
                 case FieldObject.UpperTank:
                     if (_upperTank.Shoot())
                     {
-                        Console.WriteLine("ushoot");
                         bullet = new Bullet(leftX: _upperTank.LeftX + Constants.TankWidth / 2,
                             upperY: _upperTank.UpperY + Constants.BulletHeight,_upperTank.Direction, _upperTank);
                         _bullets.Add(bullet);
                     }
-                
                 
                     break;
                 case FieldObject.LowerTank:

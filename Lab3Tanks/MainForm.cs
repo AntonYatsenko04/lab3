@@ -41,6 +41,8 @@ namespace Lab3Tanks
         private Thread _lowerTankThread;
         private Thread _commonThread;
 
+        private bool _stopThread = false;
+
         public MainForm()
         {
             this.BackColor = Color.Green;
@@ -58,7 +60,7 @@ namespace Lab3Tanks
 
         private void _commonLoop()
         {
-            while (true)
+            while (!_stopThread)
             {
                 UpdateWallTankConstraints();
                 ShootKey();
@@ -126,13 +128,13 @@ namespace Lab3Tanks
 
         private void _driveTank(TankNavigator tankNavigator, FieldObject fieldObject)
         {
-            while (true)
+            while (!_stopThread)
             {
                 lock (_upperTankConstraints)
                 {
                     lock (_lowerTankConstraints)
                     {
-                        foreach (var keyValuePair in _pressedKeys.Where((e) => e.Value))
+                        foreach (var keyValuePair in _pressedKeys.Where((e) => e.Value == true))
                         {
                             if (fieldObject == FieldObject.UpperTank)
                             {
@@ -171,6 +173,8 @@ namespace Lab3Tanks
 
                 Thread.Sleep(Constants.SleepTimeout);
             }
+            
+            Console.WriteLine("stop t");
         }
 
 
@@ -178,13 +182,14 @@ namespace Lab3Tanks
         {
             base.OnKeyDown(e);
 
-
-            if (_pressedKeys.ContainsKey(e.KeyCode))
+            lock (_pressedKeys)
             {
-                
-                _pressedKeys[e.KeyCode] = true;
-                Console.WriteLine(e.KeyData);
+                if (_pressedKeys.ContainsKey(e.KeyCode))
+                {
+                    _pressedKeys[e.KeyCode] = true;
+                }
             }
+           
                 
         }
 
@@ -192,8 +197,12 @@ namespace Lab3Tanks
         {
             base.OnKeyUp(e);
 
-            if (_pressedKeys.ContainsKey(e.KeyCode))
-                _pressedKeys[e.KeyCode] = false;
+            lock (_bullets)
+            {
+                if (_pressedKeys.ContainsKey(e.KeyCode))
+                    _pressedKeys[e.KeyCode] = false;
+            }
+            
         }
     }
 }

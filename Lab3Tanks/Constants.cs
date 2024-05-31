@@ -11,7 +11,7 @@ public class Constants
     
     public static int BulletWidth = 5;
     public static int BulletHeight = 5;
-    public static int BulletSpeed = 20;
+    public static int BulletSpeed = 10;
     
     
     public static int CloseInterval = 2;

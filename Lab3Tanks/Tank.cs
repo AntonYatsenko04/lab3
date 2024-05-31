@@ -12,14 +12,14 @@ public class Tank
 
     public int YPos { get; private set; }
 
-    public Tank(int xPos, int yPos, int speed)
+    public Tank(int xPos, int yPos, int speed, Direction direction)
     {
         XPos = xPos;
         YPos = yPos;
         _speed = speed;
-        _direction = Direction.Up;
+        _direction = direction;
         _timeOfLastShot=DateTime.Today;
-        _reloadTime = TimeSpan.FromMilliseconds(200);
+        _reloadTime = TimeSpan.FromMilliseconds(1000);
     }
 
     public void Move(Direction direction)

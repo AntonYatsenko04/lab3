@@ -22,14 +22,15 @@ public class TankNavigator :ICollidable
     
     public Direction Direction { get; set; }
 
-    public TankNavigator(Keys upKey, Keys rightKey, Keys downKey, Keys leftKey, Keys shootKey, int x,int y)
+    public TankNavigator(Keys upKey, Keys rightKey, Keys downKey, Keys leftKey, Keys shootKey, int x,int y, Direction direction)
     {
         _upKey = upKey;
         _rightKey = rightKey;
         _downKey = downKey;
         _leftKey = leftKey;
         _shootKey = shootKey;
-        _tank = new Tank(x,y, Constants.TankSpeed);
+        Direction = direction; 
+        _tank = new Tank(x,y, Constants.TankSpeed,direction);
     }
 
     public void Drive(Keys key, List<Direction> constraints)
